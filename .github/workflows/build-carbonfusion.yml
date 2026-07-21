@@ -6,7 +6,7 @@ permissions:
 
 on:
   push:
-    branches: [carbonfusion]
+    branches: [dev]
   pull_request:
     branches: [carbonfusion]
 
