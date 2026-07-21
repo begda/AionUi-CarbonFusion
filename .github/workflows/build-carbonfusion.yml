@@ -17,6 +17,7 @@ jobs:
   build-pipeline:
     name: Build Pipeline
     uses: ./.github/workflows/_build-reusable.yml
+    secrets: inherit
     with:
       matrix: >-
         {"include":[
