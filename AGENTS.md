@@ -1,3 +1,12 @@
+写代码前
+读取 项目开发记录 确保开发连续性
+先给出方案 ,用户确认了才开始也代码,不要一开始就自作主张写代码
+
+给方案前必须想清楚、想全面，考虑开发态和生产态的差异、打包部署的影响、前后一致性等，不要给不成熟、不靠谱的方案
+
+做任何功能规划前，必须先读 数据库分析/微信数据库.md，了解表结构后再给方案
+
+
 # AionUi - Project Guide
 
 All contributors (human and AI) must follow [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR. ([Chinese version](CONTRIBUTING.zh.md))
@@ -152,3 +161,5 @@ When opening a PR, fill in the PR body using [.github/pull_request_template.md](
 | **bump-version** | Version bump workflow: update package.json, checks, branch, PR, tag release | Bumping version, `/bump-version`                                                                       |
 
 > Skills are located in `.claude/skills/` and contain project conventions that apply to **all** agents and contributors.
+
+
