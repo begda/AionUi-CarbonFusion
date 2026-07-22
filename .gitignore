@@ -220,3 +220,5 @@ graphify-out/
 
 # Local scratch/analysis (wireframes, candidate mockups)
 .analysis/
+/项目开发记录/aa.md
+/项目开发记录/*
