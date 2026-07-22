@@ -6,7 +6,6 @@
 
 做任何功能规划前，必须先读 数据库分析/微信数据库.md，了解表结构后再给方案
 
-
 # AionUi - Project Guide
 
 All contributors (human and AI) must follow [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR. ([Chinese version](CONTRIBUTING.zh.md))
@@ -161,5 +160,3 @@ When opening a PR, fill in the PR body using [.github/pull_request_template.md](
 | **bump-version** | Version bump workflow: update package.json, checks, branch, PR, tag release | Bumping version, `/bump-version`                                                                       |
 
 > Skills are located in `.claude/skills/` and contain project conventions that apply to **all** agents and contributors.
-
-
