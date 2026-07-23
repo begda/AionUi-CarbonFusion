@@ -1,7 +1,10 @@
 {
-  "name": "AionUi",
-  "short_name": "AionUi",
-  "description": "AionUi WebUI for mobile and desktop browsers.",
+  "注释": "shanzheke 修改",
+  "name": "CarbonFusion",
+  "注释2": "shanzheke 修改",
+  "short_name": "CarbonFusion",
+  "注释3": "shanzheke 修改",
+  "description": "CarbonFusion WebUI for mobile and desktop browsers.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

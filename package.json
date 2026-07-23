@@ -1,12 +1,15 @@
 {
-  "name": "AionUi",
+  "注释": "shanzheke 修改",
+  "name": "CarbonFusion",
   "version": "2.1.39",
   "description": "Transform your command-line AI agent into a modern, efficient AI Chat interface.",
   "keywords": [],
   "license": "Apache-2.0",
   "author": {
-    "name": "AionUi",
-    "email": "service@aionui.com"
+    "注释": "shanzheke 修改",
+    "name": "CarbonFusion",
+    "注释2": "shanzheke 修改",
+    "email": "service@carbonfusion.com"
   },
   "workspaces": [
     "packages/*"
@@ -262,5 +265,6 @@
   "patchedDependencies": {
     "7zip-bin@5.2.0": "patches/7zip-bin@5.2.0.patch"
   },
-  "productName": "AionUi"
+  "注释4": "shanzheke 修改",
+  "productName": "CarbonFusion"
 }

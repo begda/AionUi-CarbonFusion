@@ -91,26 +91,26 @@ const ensureCliSafeSymlink = (targetPath: string, symlinkName: string): string =
 
 /**
  * Get data path, using CLI-safe symlink on macOS.
- * Release builds use ~/.aionui; dev builds use ~/.aionui-dev.
+ * Release builds use ~/.carbonfusion; dev builds use ~/.carbonfusion-dev.  // shanzhake修改
  * 获取数据目录路径，macOS 上使用符号链接。
- * Release 使用 ~/.aionui，Dev 模式使用 ~/.aionui-dev。
+ * Release 使用 ~/.carbonfusion，Dev 模式使用 ~/.carbonfusion-dev。  // shanzhake修改
  */
 export const getDataPath = (): string => {
   const rootPath = getElectronPathOrFallback('userData');
-  const dataPath = path.join(rootPath, 'aionui');
-  return ensureCliSafeSymlink(dataPath, getEnvAwareName('.aionui'));
+  const dataPath = path.join(rootPath, 'carbonfusion');  // shanzhake修改
+  return ensureCliSafeSymlink(dataPath, getEnvAwareName('.carbonfusion'));  // shanzhake修改
 };
 
 /**
  * Get config path, using CLI-safe symlink on macOS.
- * Release builds use ~/.aionui-config; dev builds use ~/.aionui-config-dev.
+ * Release builds use ~/.carbonfusion-config; dev builds use ~/.carbonfusion-config-dev.  // shanzhake修改
  * 获取配置目录路径，macOS 上使用符号链接。
- * Release 使用 ~/.aionui-config，Dev 模式使用 ~/.aionui-config-dev。
+ * Release 使用 ~/.carbonfusion-config，Dev 模式使用 ~/.carbonfusion-config-dev。  // shanzhake修改
  */
 export const getConfigPath = (): string => {
   const rootPath = getElectronPathOrFallback('userData');
   const configPath = path.join(rootPath, 'config');
-  return ensureCliSafeSymlink(configPath, getEnvAwareName('.aionui-config'));
+  return ensureCliSafeSymlink(configPath, getEnvAwareName('.carbonfusion-config'));  // shanzhake修改
 };
 
 /**

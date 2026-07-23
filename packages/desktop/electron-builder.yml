@@ -1,12 +1,12 @@
-appId: com.aionui.app
-productName: AionUi
-executableName: AionUi
-copyright: Copyright © 2024 AionUi
+appId: com.shanzhake.app  # shanzhake修改
+productName: CarbonFusion  # shanzhake修改
+executableName: CarbonFusion  # shanzhake修改
+copyright: Copyright © 2024 CarbonFusion  # shanzhake修改
 
 protocols:
-  - name: AionUi Protocol
+  - name: CarbonFusion Protocol  # shanzhake修改
     schemes:
-      - aionui
+      - carbonfusion  # shanzhake修改
 
 asar:
   smartUnpack: true
