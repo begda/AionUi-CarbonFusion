@@ -3,6 +3,7 @@
 ## 问题
 
 当前 `dev` 分支使用 `build-and-release.yml` 构建 6 个平台，但 AionCore 只有 4 个构件：
+
 - 缺少 `macOS x64`（`x86_64-apple-darwin`）
 - 缺少 `Linux ARM64`（`aarch64-unknown-linux-gnu`）
 
@@ -14,11 +15,12 @@
 
 ### 修改 1：`.github/workflows/build-and-release.yml` — 缩减构建矩阵
 
-| 行号 | 修改前 | 修改后 |
-| ---- | ------ | ------ |
+| 行号  | 修改前     | 修改后     |
+| ----- | ---------- | ---------- |
 | 64-72 | 6 平台矩阵 | 4 平台矩阵 |
 
 **当前矩阵（6 平台）：**
+
 ```yaml
 matrix: >-
   {"include":[
@@ -32,6 +34,7 @@ matrix: >-
 ```
 
 **修改后（4 平台）：**
+
 ```yaml
 matrix: >-
   {"include":[
@@ -46,10 +49,10 @@ matrix: >-
 
 ### 修改 2：`scripts/prepare-release-assets.sh` — 放宽资产验证
 
-| 行号 | 修改前 | 修改后 |
-| ---- | ------ | ------ |
-| 122  | `latest-mac.yml latest-linux-arm64.yml` 在必选列表中 | 从必选列表移除 |
-| 134-146 | 循环验证 `mac-x64` 和 `mac-arm64` 的 DMG/ZIP | 只验证 `mac-arm64` |
+| 行号    | 修改前                                               | 修改后             |
+| ------- | ---------------------------------------------------- | ------------------ |
+| 122     | `latest-mac.yml latest-linux-arm64.yml` 在必选列表中 | 从必选列表移除     |
+| 134-146 | 循环验证 `mac-x64` 和 `mac-arm64` 的 DMG/ZIP         | 只验证 `mac-arm64` |
 
 **原因**：不构建 `macos-x64` 和 `linux-arm64` 后，这些产物不会生成。Release 资产验证脚本会检查所有平台产物是否齐全，不修改的话会报错退出。
 
@@ -59,14 +62,14 @@ matrix: >-
 
 ### 构建平台
 
-| 平台 | 修改前 | 修改后 |
-|------|--------|--------|
-| macOS ARM64 | ✅ | ✅ |
-| macOS x64 | ✅ | ❌ |
-| Windows x64 | ✅ | ✅ |
-| Windows ARM64 | ✅ | ✅ |
-| Linux x64 | ✅ | ✅ |
-| Linux ARM64 | ✅ | ❌ |
+| 平台          | 修改前 | 修改后 |
+| ------------- | ------ | ------ |
+| macOS ARM64   | ✅     | ✅     |
+| macOS x64     | ✅     | ❌     |
+| Windows x64   | ✅     | ✅     |
+| Windows ARM64 | ✅     | ✅     |
+| Linux x64     | ✅     | ✅     |
+| Linux ARM64   | ✅     | ❌     |
 
 ---
 
