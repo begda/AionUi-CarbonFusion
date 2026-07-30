@@ -57,14 +57,18 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 ### 修改 4：`.github/workflows/_build-reusable.yml` — CI 中配置环境变量
 
-| 行号      | 在当前 env 区块中新增             |
-| --------- | --------------------------------- |
-| 约 371 行 | `AIONUI_BACKEND_OWNER: 'begda'`   |
-| 约 371 行 | `AIONUI_BACKEND_REPO: 'AionCore'` |
+**需要修改 4 处 env 区块：**
 
-**原因**：脚本中虽然支持了环境变量，但 CI 运行时不会自动设置它们。不加的话，CI 中 `process.env.AIONUI_BACKEND_OWNER` 和 `AIONUI_BACKEND_REPO` 为空，走默认值 `iOfficeAI/AionCore`，仍然去上游下载。
+| 位置                                    | 说明                               | 新增内容                                                              |
+| --------------------------------------- | ---------------------------------- | --------------------------------------------------------------------- |
+| `Prepare aioncore binary` 步骤（约 371 行） | 独立下载 AionCore 步骤             | `AIONUI_BACKEND_OWNER: 'begda'` + `AIONUI_BACKEND_REPO: 'AionCore'`  |
+| Windows 构建步骤（约 405 行）            | 构建脚本内部调用 `prepareAioncore()` | 同上                                                                  |
+| macOS 构建步骤（约 508 行）              | 同上                               | 同上                                                                  |
+| Linux 构建步骤（约 549 行）              | 同上                               | 同上                                                                  |
 
-需要在 `_build-reusable.yml` 中 `Prepare aioncore binary` 步骤的 `env` 区块添加这两个变量，让 CI 知道去 `begda/AionCore` 下载。
+**原因**：`build-with-builder.js` 内部也调用了 `prepareAioncore()` 来下载 AionCore 二进制文件。如果只在 `Prepare aioncore binary` 步骤配置环境变量，但 macOS/Windows/Linux 构建步骤的 env 中没有设置，`build-with-builder.js` 调用时就会走到默认值 `iOfficeAI/AionCore`，下载失败（404），导致构建中断。
+
+需要在 `_build-reusable.yml` 中所有调用 `prepareAioncore()` 的步骤的 `env` 区块都添加这两个变量。
 
 ---
 
@@ -91,10 +95,10 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 ### CI 环境变量
 
-| 文件                      | 修改前（无） | 修改后（新增）                    |
-| ------------------------- | ------------ | --------------------------------- |
-| `_build-reusable.yml:371` | —            | `AIONUI_BACKEND_OWNER: 'begda'`   |
-| `_build-reusable.yml:371` | —            | `AIONUI_BACKEND_REPO: 'AionCore'` |
+| 文件                      | 位置 | 修改前（无） | 修改后（新增）                    |
+| ------------------------- | ---- | ------------ | --------------------------------- |
+| `_build-reusable.yml`     | 4 处 | —            | `AIONUI_BACKEND_OWNER: 'begda'`   |
+| `_build-reusable.yml`     | 4 处 | —            | `AIONUI_BACKEND_REPO: 'AionCore'` |
 
 ---
 
