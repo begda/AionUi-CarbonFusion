@@ -103,12 +103,15 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 | 行号 | 修改前 | 修改后 |
 | ---- | ------ | ------ |
 | 174  | `if (contract.schemaVersion !== 1) {` | `if (typeof contract.schemaVersion !== 'number' \|\| contract.schemaVersion < 1) {` |
+| 187  | _（无）_ | `if (contract.schemaVersion > 1) { return; }` |
 
 **原因**：自定义 AionCore 构建生成的 `managed-resources/manifest.json` 中 `schemaVersion` 可能不是 `1`（如 `2`）。原代码严格检查 `!== 1`，导致验证失败，构建中断。
 
-修复后改为"检查 `schemaVersion` 是否为有效的数字且 >= 1"，兼容新旧版本。
+修复有两处：
+1. 将 `schemaVersion !== 1` 改为 `typeof !== 'number' \|\| < 1`，允许任意 >= 1 的版本号通过
+2. 对 `schemaVersion > 1` 的新版 schema 跳过 `node`/`acpTools` 等详细字段校验，避免因新版 manifest 结构不同而报错
 
-**上游合并影响**：冲突范围极小（仅一行），每次拉上游更新时手动处理一次即可。
+**上游合并影响**：冲突范围极小（两行代码），每次拉上游更新时手动处理一次即可。
 
 ---
 

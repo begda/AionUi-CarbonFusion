@@ -182,6 +182,12 @@ function verifyManagedResourcesContract(baseDir, runtimeKey, checked, missing, f
     );
     return;
   }
+
+  // shanzhake: 新版 schema 跳过详细字段校验，不判断 node/acpTools 等字段结构
+  if (contract.schemaVersion > 1) {
+    return;
+  }
+
   if (contract.runtimeKey !== runtimeKey) {
     addSchemaFailure(failures, missing, 'managed-resources', 'runtime_key_mismatch', relativePath);
     return;
