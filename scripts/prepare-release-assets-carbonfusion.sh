@@ -19,6 +19,15 @@ OUTPUT_DIR="${2:-release-assets}"
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 
+# Debug: show what was downloaded
+echo "==> Debug: listing build-artifacts structure ..."
+if [ -d "$ARTIFACTS_DIR" ]; then
+  find "$ARTIFACTS_DIR" -type f | head -20
+  echo "Total files: $(find "$ARTIFACTS_DIR" -type f | wc -l)"
+else
+  echo "  ❌ $ARTIFACTS_DIR directory not found!"
+fi
+
 # ---------------------------------------------------------------------------
 # 1) Copy all distributables
 # ---------------------------------------------------------------------------

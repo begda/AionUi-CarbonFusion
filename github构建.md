@@ -59,12 +59,12 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 **需要修改 4 处 env 区块：**
 
-| 位置                                    | 说明                               | 新增内容                                                              |
-| --------------------------------------- | ---------------------------------- | --------------------------------------------------------------------- |
-| `Prepare aioncore binary` 步骤（约 371 行） | 独立下载 AionCore 步骤             | `AIONUI_BACKEND_OWNER: 'begda'` + `AIONUI_BACKEND_REPO: 'AionCore'`  |
-| Windows 构建步骤（约 405 行）            | 构建脚本内部调用 `prepareAioncore()` | 同上                                                                  |
-| macOS 构建步骤（约 508 行）              | 同上                               | 同上                                                                  |
-| Linux 构建步骤（约 549 行）              | 同上                               | 同上                                                                  |
+| 位置                                        | 说明                                 | 新增内容                                                            |
+| ------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------- |
+| `Prepare aioncore binary` 步骤（约 371 行） | 独立下载 AionCore 步骤               | `AIONUI_BACKEND_OWNER: 'begda'` + `AIONUI_BACKEND_REPO: 'AionCore'` |
+| Windows 构建步骤（约 405 行）               | 构建脚本内部调用 `prepareAioncore()` | 同上                                                                |
+| macOS 构建步骤（约 508 行）                 | 同上                                 | 同上                                                                |
+| Linux 构建步骤（约 549 行）                 | 同上                                 | 同上                                                                |
 
 **原因**：`build-with-builder.js` 内部也调用了 `prepareAioncore()` 来下载 AionCore 二进制文件。如果只在 `Prepare aioncore binary` 步骤配置环境变量，但 macOS/Windows/Linux 构建步骤的 env 中没有设置，`build-with-builder.js` 调用时就会走到默认值 `iOfficeAI/AionCore`，下载失败（404），导致构建中断。
 
@@ -95,23 +95,24 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 ### CI 环境变量
 
-| 文件                      | 位置 | 修改前（无） | 修改后（新增）                    |
-| ------------------------- | ---- | ------------ | --------------------------------- |
-| `_build-reusable.yml`     | 4 处 | —            | `AIONUI_BACKEND_OWNER: 'begda'`   |
-| `_build-reusable.yml`     | 4 处 | —            | `AIONUI_BACKEND_REPO: 'AionCore'` |
+| 文件                  | 位置 | 修改前（无） | 修改后（新增）                    |
+| --------------------- | ---- | ------------ | --------------------------------- |
+| `_build-reusable.yml` | 4 处 | —            | `AIONUI_BACKEND_OWNER: 'begda'`   |
+| `_build-reusable.yml` | 4 处 | —            | `AIONUI_BACKEND_REPO: 'AionCore'` |
 
 ---
 
 ### 修改 5：`packages/shared-scripts/src/verify-bundled-aioncore-resources.js` — 放宽 schema 版本检查
 
-| 行号 | 修改前 | 修改后 |
-| ---- | ------ | ------ |
+| 行号 | 修改前                                | 修改后                                                                              |
+| ---- | ------------------------------------- | ----------------------------------------------------------------------------------- |
 | 175  | `if (contract.schemaVersion !== 1) {` | `if (typeof contract.schemaVersion !== 'number' \|\| contract.schemaVersion < 1) {` |
-| 187  | _（无）_ | `if (contract.schemaVersion > 1) { return; }` |
+| 187  | _（无）_                              | `if (contract.schemaVersion > 1) { return; }`                                       |
 
 **原因**：自定义 AionCore 构建生成的 `managed-resources/manifest.json` 中 `schemaVersion` 可能不是 `1`（如 `2`）。原代码严格检查 `!== 1`，导致验证失败，构建中断。
 
 修复有两处：
+
 1. 将 `schemaVersion !== 1` 改为 `typeof !== 'number' \|\| < 1`，允许任意 >= 1 的版本号通过
 2. 对 `schemaVersion > 1` 的新版 schema 跳过 `node`/`acpTools` 等详细字段校验，避免因新版 manifest 结构不同而报错
 
