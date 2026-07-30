@@ -21,8 +21,10 @@ const os = require('os');
 const path = require('path');
 const { verifyBundledAioncoreResources } = require('./verify-bundled-aioncore-resources');
 
-const GITHUB_OWNER = 'iOfficeAI';
-const GITHUB_REPO = 'AionCore';
+// shanzhake: 添加环境变量支持，可在 CI 中通过 AIONUI_BACKEND_OWNER/AIONUI_BACKEND_REPO 覆盖仓库地址
+const GITHUB_OWNER = process.env.AIONUI_BACKEND_OWNER || 'iOfficeAI';
+// shanzhake: 添加环境变量支持，可在 CI 中通过 AIONUI_BACKEND_OWNER/AIONUI_BACKEND_REPO 覆盖仓库地址
+const GITHUB_REPO = process.env.AIONUI_BACKEND_REPO || 'AionCore';
 
 const ACTIONS_ARTIFACT_TARGETS = {
   'darwin-arm64': {
@@ -456,7 +458,8 @@ function prepareAioncore(options) {
       tag = resolved;
       console.log(`Resolved aioncore "latest" → ${tag}`);
     } else {
-      tag = version.startsWith('v') ? version : `v${version}`;
+      // shanzhake: 修复版本号判断逻辑——不以数字开头的版本号（如 carbonfusion-v0.1.52）不再自动加 v 前缀
+      tag = /^\d/.test(version) ? `v${version}` : version;
     }
   }
 

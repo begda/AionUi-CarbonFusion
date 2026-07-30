@@ -368,6 +368,9 @@ jobs:
         env:
           # Version is pinned in repo-root package.json (aioncoreVersion).
           # Set AIONUI_BACKEND_VERSION here only to override for ad-hoc builds.
+          # shanzhake: 指定 AionCore 仓库地址，从 begda/AionCore 下载二进制文件
+          AIONUI_BACKEND_OWNER: 'begda'
+          AIONUI_BACKEND_REPO: 'AionCore'
           AIONUI_BACKEND_RUN_ID: ${{ inputs.aioncore_run_id }}
           AIONUI_BACKEND_ARCH: ${{ matrix.arch }}
           GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
