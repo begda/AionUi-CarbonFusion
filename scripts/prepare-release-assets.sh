@@ -85,10 +85,8 @@ echo "==> Collecting updater metadata ..."
 
 WIN_X64_LATEST=$(find "$ARTIFACTS_DIR" -type f -path "*/windows-build-x64/*" -name "latest.yml" | sort | head -n 1 || true)
 WIN_ARM64_LATEST=$(find "$ARTIFACTS_DIR" -type f -path "*/windows-build-arm64/*" -name "latest.yml" | sort | head -n 1 || true)
-MAC_X64_LATEST=$(find "$ARTIFACTS_DIR" -type f -path "*/macos-build-x64/*" -name "latest-mac.yml" | sort | head -n 1 || true)
 MAC_ARM64_LATEST=$(find "$ARTIFACTS_DIR" -type f -path "*/macos-build-arm64/*" -name "latest-mac.yml" | sort | head -n 1 || true)
 LINUX_X64_LATEST=$(find "$ARTIFACTS_DIR" -type f -path "*/linux-build-x64/*" -name "latest-linux.yml" | sort | head -n 1 || true)
-LINUX_ARM64_LATEST=$(find "$ARTIFACTS_DIR" -type f -path "*/linux-build-arm64/*" -name "latest-linux-arm64.yml" | sort | head -n 1 || true)
 
 # ---------------------------------------------------------------------------
 # 3) Publish deterministic canonical metadata for electron-updater
@@ -97,9 +95,7 @@ LINUX_ARM64_LATEST=$(find "$ARTIFACTS_DIR" -type f -path "*/linux-build-arm64/*"
 echo "==> Writing canonical updater metadata ..."
 
 [ -n "$WIN_X64_LATEST" ]    && cp -f "$WIN_X64_LATEST"    "$OUTPUT_DIR/latest.yml"
-[ -n "$MAC_X64_LATEST" ]    && cp -f "$MAC_X64_LATEST"    "$OUTPUT_DIR/latest-mac.yml"
 [ -n "$LINUX_X64_LATEST" ]  && cp -f "$LINUX_X64_LATEST"  "$OUTPUT_DIR/latest-linux.yml"
-[ -n "$LINUX_ARM64_LATEST" ] && cp -f "$LINUX_ARM64_LATEST" "$OUTPUT_DIR/latest-linux-arm64.yml"
 
 # ---------------------------------------------------------------------------
 # 4) Architecture-specific metadata required by electron-updater
@@ -119,7 +115,7 @@ echo "==> Validating required metadata ..."
 
 VERSION="${MOCK_VERSION:-$(node -p "require('./package.json').version")}"
 MISSING=0
-for required in latest.yml latest-mac.yml latest-linux.yml latest-linux-arm64.yml; do
+for required in latest.yml latest-linux.yml; do
   if [ ! -f "$OUTPUT_DIR/$required" ]; then
     echo "::error::Missing required updater metadata: $required"
     MISSING=1
@@ -131,7 +127,7 @@ done
 # ---------------------------------------------------------------------------
 echo "==> Validating desktop release assets ..."
 
-for arch in x64 arm64; do
+for arch in arm64; do
   for ext in dmg zip; do
     asset="AionUi-${VERSION}-mac-${arch}.${ext}"
     if [ ! -f "$OUTPUT_DIR/$asset" ]; then
