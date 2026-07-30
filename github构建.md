@@ -98,6 +98,20 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 ---
 
+### 修改 5：`packages/shared-scripts/src/verify-bundled-aioncore-resources.js` — 放宽 schema 版本检查
+
+| 行号 | 修改前 | 修改后 |
+| ---- | ------ | ------ |
+| 174  | `if (contract.schemaVersion !== 1) {` | `if (typeof contract.schemaVersion !== 'number' \|\| contract.schemaVersion < 1) {` |
+
+**原因**：自定义 AionCore 构建生成的 `managed-resources/manifest.json` 中 `schemaVersion` 可能不是 `1`（如 `2`）。原代码严格检查 `!== 1`，导致验证失败，构建中断。
+
+修复后改为"检查 `schemaVersion` 是否为有效的数字且 >= 1"，兼容新旧版本。
+
+**上游合并影响**：冲突范围极小（仅一行），每次拉上游更新时手动处理一次即可。
+
+---
+
 ## 修改后完整流程
 
 ```

@@ -171,7 +171,8 @@ function verifyManagedResourcesContract(baseDir, runtimeKey, checked, missing, f
     addSchemaFailure(failures, missing, 'managed-resources', 'invalid_schema', relativePath);
     return;
   }
-  if (contract.schemaVersion !== 1) {
+  // shanzhake: 放宽 schema 版本检查，支持自定义 AionCore 构建生成的新版 schema
+  if (typeof contract.schemaVersion !== 'number' || contract.schemaVersion < 1) {
     addSchemaFailure(
       failures,
       missing,
