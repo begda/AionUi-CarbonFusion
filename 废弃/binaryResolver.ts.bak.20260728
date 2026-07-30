@@ -7,9 +7,8 @@
  */
 
 import { existsSync, readdirSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 import { execSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
 
 const BINARY_NAME = 'aioncore';
 const MAX_DIR_ENTRIES = 20;
@@ -87,21 +86,6 @@ export function resolveBinaryPath(): string {
 }
 
 /**
- * Resolve resources path for development mode.
- * Uses __dirname to backtrack to the project root's resources/ directory.
- */
-function resolveDevResourcesPath(): string | undefined {
-  try {
-    // __dirname is out/main/ in development
-    const candidate = resolve(__dirname, '../../resources');
-    if (existsSync(candidate)) return candidate;
-  } catch {
-    // ignore
-  }
-  return undefined;
-}
-
-/**
  * Check bundled binary in resources directory.
  * Layout: bundled-aioncore/{platform}-{arch}/aioncore[.exe]
  */
@@ -110,14 +94,7 @@ function bundledPath(
   binaryName: string,
   diagnostics: BackendBinaryResolveDiagnostics
 ): string | null {
-  // Try process.resourcesPath first (production)
-  let resourcesPath = (process as NodeJS.Process & { resourcesPath?: string }).resourcesPath;
-
-  // Fallback to dev resources path if not in production
-  if (!resourcesPath) {
-    resourcesPath = resolveDevResourcesPath();
-  }
-
+  const resourcesPath = (process as NodeJS.Process & { resourcesPath?: string }).resourcesPath;
   if (!resourcesPath) return null;
   diagnostics.resourcesPath = resourcesPath;
 

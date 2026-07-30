@@ -15,7 +15,7 @@ import { LIGHT_THEME_ID } from '@/common/theme/constants';
 import type { Theme } from '@/common/theme/types';
 import { useCallback, useEffect, useState } from 'react';
 
-const APPEARANCE_CACHE_KEY = '__carbonfusion_theme';  // shanzhake修改
+const APPEARANCE_CACHE_KEY = '__carbonfusion_theme'; // shanzhake修改
 
 function getPersistedActiveId(): string {
   return (configService.get('theme.activeId') as string) || LIGHT_THEME_ID;

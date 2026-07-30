@@ -13,7 +13,7 @@ import classNames from 'classnames';
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import brandLogo from '@renderer/assets/logos/brand/app.png';  // shanzhake修改
+import brandLogo from '@renderer/assets/logos/brand/app.png'; // shanzhake修改
 import { setGlobalNavigate } from '@/renderer/utils/navigation';
 import { usePreviewContext } from '@renderer/pages/conversation/Preview';
 import { LayoutContext } from '@renderer/hooks/context/LayoutContext';
@@ -372,15 +372,11 @@ const Layout: React.FC<{
                 )}
               >
                 <div
-                  className='size-32px relative rd-0.5rem'  // shanzhake修改: 固定 32*32
+                  className='size-32px relative rd-0.5rem' // shanzhake修改: 固定 32*32
                   onClick={onClick}
                 >
                   {/* shanzhake修改: 替换内联 SVG 为新 logo */}
-                  <img
-                    src={brandLogo}
-                    alt='CarbonFusion'
-                    className='w-full h-full object-contain'
-                  />
+                  <img src={brandLogo} alt='CarbonFusion' className='w-full h-full object-contain' />
                 </div>
                 {isSettingsRoute ? (
                   <Tooltip content={t('common.back', { defaultValue: 'Back to Chat' })} position='bottom'>

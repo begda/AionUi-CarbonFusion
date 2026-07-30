@@ -1,12 +1,12 @@
-appId: com.shanzhake.app  # shanzhake修改
-productName: CarbonFusion  # shanzhake修改
-executableName: CarbonFusion  # shanzhake修改
-copyright: Copyright © 2024 CarbonFusion  # shanzhake修改
+appId: com.shanzhake.app # shanzhake修改
+productName: CarbonFusion # shanzhake修改
+executableName: CarbonFusion # shanzhake修改
+copyright: Copyright © 2024 CarbonFusion # shanzhake修改
 
 protocols:
-  - name: CarbonFusion Protocol  # shanzhake修改
+  - name: CarbonFusion Protocol # shanzhake修改
     schemes:
-      - carbonfusion  # shanzhake修改
+      - carbonfusion # shanzhake修改
 
 asar:
   smartUnpack: true

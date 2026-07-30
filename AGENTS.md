@@ -4,8 +4,6 @@
 
 给方案前必须想清楚、想全面，考虑开发态和生产态的差异、打包部署的影响、前后一致性等，不要给不成熟、不靠谱的方案
 
-做任何功能规划前，必须先读 数据库分析/微信数据库.md，了解表结构后再给方案
-
 # AionUi - Project Guide
 
 All contributors (human and AI) must follow [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR. ([Chinese version](CONTRIBUTING.zh.md))

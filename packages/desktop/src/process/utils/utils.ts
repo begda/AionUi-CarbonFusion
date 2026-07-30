@@ -97,8 +97,8 @@ const ensureCliSafeSymlink = (targetPath: string, symlinkName: string): string =
  */
 export const getDataPath = (): string => {
   const rootPath = getElectronPathOrFallback('userData');
-  const dataPath = path.join(rootPath, 'carbonfusion');  // shanzhake修改
-  return ensureCliSafeSymlink(dataPath, getEnvAwareName('.carbonfusion'));  // shanzhake修改
+  const dataPath = path.join(rootPath, 'carbonfusion'); // shanzhake修改
+  return ensureCliSafeSymlink(dataPath, getEnvAwareName('.carbonfusion')); // shanzhake修改
 };
 
 /**
@@ -110,7 +110,7 @@ export const getDataPath = (): string => {
 export const getConfigPath = (): string => {
   const rootPath = getElectronPathOrFallback('userData');
   const configPath = path.join(rootPath, 'config');
-  return ensureCliSafeSymlink(configPath, getEnvAwareName('.carbonfusion-config'));  // shanzhake修改
+  return ensureCliSafeSymlink(configPath, getEnvAwareName('.carbonfusion-config')); // shanzhake修改
 };
 
 /**
