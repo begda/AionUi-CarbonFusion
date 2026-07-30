@@ -45,7 +45,7 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 | 行号 | 修改前                                                       | 修改后                                                   |
 | ---- | ------------------------------------------------------------ | -------------------------------------------------------- |
-| 459  | `tag = version.startsWith('v') ? version : \`v${version}\`;` | `tag = /^\d/.test(version) ? \`v${version}\` : version;` |
+| 462  | `tag = version.startsWith('v') ? version : \`v${version}\`;` | `tag = /^\d/.test(version) ? \`v${version}\` : version;` |
 
 **原因**：原逻辑判断"如果版本号以 `v` 开头，直接使用，否则自动加 `v`"。上游版本 `v0.1.49` 以 `v` 开头，直接使用，正确。
 
@@ -78,7 +78,7 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 | 文件               | 修改前                         | 修改后                                      |
 | ------------------ | ------------------------------ | ------------------------------------------- |
-| `package.json:261` | `"aioncoreVersion": "v0.1.50"` | `"aioncoreVersion": "carbonfusion-v0.1.52"` |
+| `package.json:260` | `"aioncoreVersion": "v0.1.50"` | `"aioncoreVersion": "carbonfusion-v0.1.52"` |
 
 ### 仓库地址
 
@@ -91,7 +91,7 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 | 文件                      | 修改前                                                      | 修改后                                                  |
 | ------------------------- | ----------------------------------------------------------- | ------------------------------------------------------- |
-| `prepare-aioncore.js:459` | `tag = version.startsWith('v') ? version : \`v${version}\`` | `tag = /^\d/.test(version) ? \`v${version}\` : version` |
+| `prepare-aioncore.js:462` | `tag = version.startsWith('v') ? version : \`v${version}\`` | `tag = /^\d/.test(version) ? \`v${version}\` : version` |
 
 ### CI 环境变量
 
@@ -106,7 +106,7 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 | 行号 | 修改前 | 修改后 |
 | ---- | ------ | ------ |
-| 174  | `if (contract.schemaVersion !== 1) {` | `if (typeof contract.schemaVersion !== 'number' \|\| contract.schemaVersion < 1) {` |
+| 175  | `if (contract.schemaVersion !== 1) {` | `if (typeof contract.schemaVersion !== 'number' \|\| contract.schemaVersion < 1) {` |
 | 187  | _（无）_ | `if (contract.schemaVersion > 1) { return; }` |
 
 **原因**：自定义 AionCore 构建生成的 `managed-resources/manifest.json` 中 `schemaVersion` 可能不是 `1`（如 `2`）。原代码严格检查 `!== 1`，导致验证失败，构建中断。
