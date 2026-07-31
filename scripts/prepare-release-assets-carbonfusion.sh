@@ -19,15 +19,6 @@ OUTPUT_DIR="${2:-release-assets}"
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 
-# Debug: show what was downloaded
-echo "==> Debug: listing build-artifacts structure ..."
-if [ -d "$ARTIFACTS_DIR" ]; then
-  find "$ARTIFACTS_DIR" -type f | head -20
-  echo "Total files: $(find "$ARTIFACTS_DIR" -type f | wc -l)"
-else
-  echo "  ❌ $ARTIFACTS_DIR directory not found!"
-fi
-
 # ---------------------------------------------------------------------------
 # 1) Copy all distributables
 # ---------------------------------------------------------------------------
@@ -78,31 +69,31 @@ VERSION="${MOCK_VERSION:-$(node -p "require('./package.json').version")}"
 MISSING=0
 
 # macOS ARM64
-if [ -f "$OUTPUT_DIR/AionUi-${VERSION}-mac-arm64.dmg" ]; then
-  echo "  ✅ macOS ARM64: AionUi-${VERSION}-mac-arm64.dmg"
+if [ -f "$OUTPUT_DIR/CarbonFusion-${VERSION}-mac-arm64.dmg" ]; then
+  echo "  ✅ macOS ARM64: CarbonFusion-${VERSION}-mac-arm64.dmg"
 else
   echo "  ⚠️  macOS ARM64 DMG not found (optional)"
 fi
 
 # Windows x64
-if ls "$OUTPUT_DIR"/AionUi-*-win-x64.exe 1>/dev/null 2>&1; then
-  echo "  ✅ Windows x64: $(ls "$OUTPUT_DIR"/AionUi-*-win-x64.exe)"
+if ls "$OUTPUT_DIR"/CarbonFusion-*-win-x64.exe 1>/dev/null 2>&1; then
+  echo "  ✅ Windows x64: $(ls "$OUTPUT_DIR"/CarbonFusion-*-win-x64.exe)"
 else
   echo "  ❌ Windows x64 installer not found"
   MISSING=1
 fi
 
 # Windows ARM64
-if ls "$OUTPUT_DIR"/AionUi-*-win-arm64.exe 1>/dev/null 2>&1; then
-  echo "  ✅ Windows ARM64: $(ls "$OUTPUT_DIR"/AionUi-*-win-arm64.exe)"
+if ls "$OUTPUT_DIR"/CarbonFusion-*-win-arm64.exe 1>/dev/null 2>&1; then
+  echo "  ✅ Windows ARM64: $(ls "$OUTPUT_DIR"/CarbonFusion-*-win-arm64.exe)"
 else
   echo "  ❌ Windows ARM64 installer not found"
   MISSING=1
 fi
 
 # Linux x64
-if ls "$OUTPUT_DIR"/AionUi-*-linux-amd64.deb 1>/dev/null 2>&1; then
-  echo "  ✅ Linux x64: $(ls "$OUTPUT_DIR"/AionUi-*-linux-amd64.deb)"
+if ls "$OUTPUT_DIR"/CarbonFusion-*-linux-amd64.deb 1>/dev/null 2>&1; then
+  echo "  ✅ Linux x64: $(ls "$OUTPUT_DIR"/CarbonFusion-*-linux-amd64.deb)"
 else
   echo "  ❌ Linux x64 installer not found"
   MISSING=1
