@@ -6,6 +6,8 @@ import { spawnSync } from 'node:child_process';
 
 const scriptPath = 'resources/windows/support/verify-bundled-aioncore-install.ps1';
 const script = readFileSync(scriptPath, 'utf8');
+const installerVerifyPath = 'resources/windows/installer-update-verify.nsh';
+const installerVerify = readFileSync(installerVerifyPath, 'utf8');
 
 function writeFile(filePath: string, contents = '') {
   mkdirSync(dirname(filePath), { recursive: true });
@@ -31,6 +33,17 @@ describe('Windows bundled aioncore install verifier', () => {
     expect(script).toContain('unsupported_schema_version');
     expect(script).toContain('invalid_schema');
     expect(script).toContain('result=fail runtime=$RuntimeKey failures=$summary');
+  });
+
+  it('preserves verifier details when PowerShell exits with an error', () => {
+    expect(script).toContain("Write-VerifyDiagnosticOutput 'resource-failure' $summary");
+    expect(script).toContain("Write-VerifyDiagnosticOutput 'script-error' $exceptionSummary");
+    expect(script).toContain('detailBase64=$detailBase64');
+    expect(installerVerify).toContain('nsExec::ExecToStack');
+    expect(installerVerify).toContain('Pop $AionUiVerifyResourceOutput');
+    expect(installerVerify).toContain(
+      'verify-bundled-aioncore-process exitCode=$AionUiVerifyResourceResult output=$AionUiVerifyResourceOutput'
+    );
   });
 
   it('requires numeric schemaVersion without PowerShell string coercion', () => {

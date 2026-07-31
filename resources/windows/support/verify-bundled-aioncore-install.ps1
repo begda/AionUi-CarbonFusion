@@ -10,7 +10,17 @@ param(
   [string]$LogPath
 )
 
-$ErrorActionPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'Stop'
+
+function Write-VerifyDiagnosticOutput {
+  param(
+    [string]$Kind,
+    [string]$Detail
+  )
+
+  $detailBase64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($Detail))
+  [Console]::Out.WriteLine("verify-bundled-aioncore kind=$Kind detailBase64=$detailBase64")
+}
 
 function Write-VerifyLog {
   param([string]$Message)
@@ -397,20 +407,37 @@ function Test-BundledResourcesOnce {
   return $failures
 }
 
-for ($attempt = 1; $attempt -le 5; $attempt++) {
-  $failures = @(Test-BundledResourcesOnce)
-  if ($failures.Count -eq 0) {
-    Write-VerifyLog "verify-bundled-aioncore result=ok runtime=$RuntimeKey attempts=$attempt"
-    exit 0
-  }
+try {
+  for ($attempt = 1; $attempt -le 5; $attempt++) {
+    $failures = @(Test-BundledResourcesOnce)
+    if ($failures.Count -eq 0) {
+      Write-VerifyLog "verify-bundled-aioncore result=ok runtime=$RuntimeKey attempts=$attempt"
+      exit 0
+    }
 
-  $summary = ($failures | ConvertTo-Json -Compress -Depth 5)
-  if ($attempt -lt 5) {
-    Write-VerifyLog "verify-bundled-aioncore result=retry classification=resource_pending_landing runtime=$RuntimeKey attempt=$attempt failures=$summary"
-    Start-Sleep -Milliseconds 500
-  } else {
-    Write-VerifyLog "verify-bundled-aioncore result=fail runtime=$RuntimeKey failures=$summary"
+    $summary = ($failures | ConvertTo-Json -Compress -Depth 5)
+    if ($attempt -lt 5) {
+      Write-VerifyLog "verify-bundled-aioncore result=retry classification=resource_pending_landing runtime=$RuntimeKey attempt=$attempt failures=$summary"
+      Start-Sleep -Milliseconds 500
+    } else {
+      Write-VerifyLog "verify-bundled-aioncore result=fail runtime=$RuntimeKey failures=$summary"
+      Write-VerifyDiagnosticOutput 'resource-failure' $summary
+    }
   }
+} catch {
+  $exceptionSummary = [ordered]@{
+    type    = $_.Exception.GetType().FullName
+    message = $_.Exception.Message
+    line    = $_.InvocationInfo.ScriptLineNumber
+  } | ConvertTo-Json -Compress
+
+  try {
+    Write-VerifyLog "verify-bundled-aioncore result=error runtime=$RuntimeKey exception=$exceptionSummary"
+  } catch {
+    # 日志文件不可写时，仍通过标准输出把异常交给安装器记录。
+  }
+  Write-VerifyDiagnosticOutput 'script-error' $exceptionSummary
+  exit 2
 }
 
 exit 1

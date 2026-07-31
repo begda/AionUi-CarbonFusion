@@ -4,6 +4,7 @@
 Var /GLOBAL AionUiUninstallHadErrors
 Var /GLOBAL AionUiUninstallLogResult
 Var /GLOBAL AionUiVerifyResourceResult
+Var /GLOBAL AionUiVerifyResourceOutput
 Var /GLOBAL AionUiUpdatedAppExitWaitResult
 Var /GLOBAL AionUiActiveMarkerExecResult
 Var /GLOBAL AionUiActiveMarkerResult
@@ -131,6 +132,7 @@ Var /GLOBAL AionUiActiveMarkerResult
     StrCpy $AionUiUninstallHadErrors "0"
     StrCpy $AionUiUninstallLogResult ""
     StrCpy $AionUiVerifyResourceResult ""
+    StrCpy $AionUiVerifyResourceOutput ""
     StrCpy $AionUiUpdatedAppExitWaitResult ""
     StrCpy $AionUiActiveMarkerExecResult ""
     StrCpy $AionUiActiveMarkerResult ""
@@ -185,8 +187,13 @@ Var /GLOBAL AionUiActiveMarkerResult
 !macro AIONUI_VERIFY_BUNDLED_AIONCORE_RESOURCES _RUNTIME_KEY
   InitPluginsDir
   File "/oname=$PLUGINSDIR\verify-bundled-aioncore-install.ps1" "${PROJECT_DIR}\resources\windows\support\verify-bundled-aioncore-install.ps1"
-  nsExec::Exec `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\verify-bundled-aioncore-install.ps1" -InstallDir "$INSTDIR" -RuntimeKey "${_RUNTIME_KEY}" -LogPath "$AionUiSessionLogPath"`
+  nsExec::ExecToStack `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\verify-bundled-aioncore-install.ps1" -InstallDir "$INSTDIR" -RuntimeKey "${_RUNTIME_KEY}" -LogPath "$AionUiSessionLogPath"`
   Pop $AionUiVerifyResourceResult
+  Pop $AionUiVerifyResourceOutput
+
+  ${If} $AionUiVerifyResourceOutput != ""
+    !insertmacro AIONUI_LOG_EVENT "verify-bundled-aioncore-process exitCode=$AionUiVerifyResourceResult output=$AionUiVerifyResourceOutput"
+  ${EndIf}
 
   ${If} $AionUiVerifyResourceResult != 0
     !insertmacro AIONUI_FAIL_UX \
