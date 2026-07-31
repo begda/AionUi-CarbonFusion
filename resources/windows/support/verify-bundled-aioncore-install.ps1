@@ -343,8 +343,12 @@ function Test-ManagedResourcesContract {
     $Failures.Add((New-Failure 'publish_or_install_missing' 'managed-resources' '' $contractPath 'invalid_schema')) | Out-Null
     return
   }
-  if ([double]$contract.schemaVersion -ne 1) {
+  if ([double]$contract.schemaVersion -lt 1) {
     $Failures.Add((New-Failure 'publish_or_install_missing' 'managed-resources' '' $contractPath 'unsupported_schema_version')) | Out-Null
+    return
+  }
+  # shanzhake: 新版 schema 跳过详细字段校验（兼容 AionCore-CarbonFusion 构建）
+  if ($contract.schemaVersion -gt 1) {
     return
   }
   if ($contract.runtimeKey -ne $RuntimeKey) {
