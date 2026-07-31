@@ -78,7 +78,7 @@ Var /GLOBAL AionUiCurrentOutDir
     $$instDir = [System.IO.Path]::GetFullPath('$INSTDIR'); \
     $$targetPath = '${_TARGET_PATH}'; \
     $$currentOutDir = '$AionUiCurrentOutDir'; \
-    $$lockerListPath = '$PLUGINSDIR\aionui-rm-lockers.txt'; \
+    $$lockerListPath = '$PLUGINSDIR\carbonfusion-rm-lockers.txt'; \
     [System.IO.File]::WriteAllText($$lockerListPath, '', (New-Object System.Text.UTF8Encoding $$false)); \
     try { \
     function Test-AionUiSamePath($$left, $$right) { \
@@ -176,7 +176,7 @@ Var /GLOBAL AionUiCurrentOutDir
 !macro AIONUI_QUERY_LOCKERS _TARGET_PATH _RETURN
   InitPluginsDir
   File /oname=$PLUGINSDIR\aionui-query-lockers.ps1 "${PROJECT_DIR}\resources\windows\support\query-lockers.ps1"
-  nsExec::Exec `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\aionui-query-lockers.ps1" -LogPath "$AionUiSessionLogPath" -InstDir "$INSTDIR" -TargetPath "${_TARGET_PATH}" -LockerListPath "$PLUGINSDIR\aionui-rm-lockers.txt" -Session "$AionUiSessionId" -Version "${VERSION}" -Arch "${AIONUI_TARGET_ARCH}" -Updated "$AionUiIsUpdated" -CurrentOutDir "$AionUiCurrentOutDir"`
+  nsExec::Exec `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\aionui-query-lockers.ps1" -LogPath "$AionUiSessionLogPath" -InstDir "$INSTDIR" -TargetPath "${_TARGET_PATH}" -LockerListPath "$PLUGINSDIR\carbonfusion-rm-lockers.txt" -Session "$AionUiSessionId" -Version "${VERSION}" -Arch "${AIONUI_TARGET_ARCH}" -Updated "$AionUiIsUpdated" -CurrentOutDir "$AionUiCurrentOutDir"`
   Pop ${_RETURN}
 !macroend
 
@@ -185,7 +185,7 @@ Var /GLOBAL AionUiCurrentOutDir
   StrCpy $AionUiLockerList ""
   ClearErrors
   SetDetailsPrint none
-  FileOpen $AionUiLockerListFile "$PLUGINSDIR\aionui-rm-lockers.txt" r
+  FileOpen $AionUiLockerListFile "$PLUGINSDIR\carbonfusion-rm-lockers.txt" r
   ${IfNot} ${Errors}
     FileRead $AionUiLockerListFile $AionUiLockerList
     FileClose $AionUiLockerListFile

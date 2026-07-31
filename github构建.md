@@ -120,7 +120,54 @@ aioncore-carbonfusion-v0.1.52-x86_64-unknown-linux-gnu.tar.gz
 
 ---
 
+### 修改 6：`scripts/prepare-release-assets-carbonfusion.sh` — CarbonFusion 专用 Release 资产脚本
+
+**原因**：上游 `prepare-release-assets.sh` 硬校验了 6 平台产物、web-cli tarball、updater 元数据等，与 CarbonFusion 的构建（4 平台，不打包 web-cli）不匹配，导致 Release 创建失败。
+
+**创建新脚本**（`scripts/prepare-release-assets-carbonfusion.sh`）：
+
+- 只复制 4 个平台的构建产物（`.exe`、`.dmg`、`.deb`）
+- 跳过 web-cli tarball 检查
+- 跳过 updater 元数据（`latest.yml` 等）硬校验
+- 使用 `CarbonFusion-*` 文件名前缀（品牌名变更后产物名从 `AionUi-*` 改为 `CarbonFusion-*`）
+
+**对应修改**：`build-carbonfusion.yml` 中 `create-release` 步骤改为调用 `scripts/prepare-release-assets-carbonfusion.sh`
+
+### 修改 7：`.github/workflows/build-carbonfusion.yml` — carbonfusion-dev 分支全平台构建
+
+| 行号  | 修改前                                               | 修改后                                                     |
+| ----- | ---------------------------------------------------- | ---------------------------------------------------------- |
+| 9     | `branches: [carbonfusion]`                           | `branches: [carbonfusion-dev]`                             |
+| 11    | `branches: [carbonfusion]`                           | `branches: [carbonfusion-dev]`                             |
+| 22-31 | 条件判断矩阵（死代码，永远只构建 macos-arm64）       | 固定 4 平台矩阵                                            |
+| 36-65 | 无                                                   | 新增 `create-tag` job                                      |
+| 68-98 | `create-release` 条件 `refs/heads/dev`（永远不执行） | 条件改为 `refs/heads/carbonfusion-dev`，使用语义化版本 tag |
+
+**原因**：`carbonfusion-dev` 是 CarbonFusion 主开发分支，需要全平台构建（macOS ARM64、Windows x64/ARM64、Linux x64）并自动创建 Release。
+
+---
+
+## 最终分支架构
+
+| 分支               | 工作流                   | 构建平台                                            | Release    |
+| ------------------ | ------------------------ | --------------------------------------------------- | ---------- |
+| `carbonfusion-dev` | `build-carbonfusion.yml` | 4 平台（macOS ARM64、Windows x64/ARM64、Linux x64） | Draft 创建 |
+| `carbonfusion`     | `build-carbonfusion.yml` | 仅 macos-arm64                                      | 不创建     |
+| `dev`              | `build-and-release.yml`  | 4 平台（已删 code-quality）                         | 公开发布   |
+
+---
+
 ## 修改后完整流程
+
+```
+carbonfusion-dev 分支 push
+  → build-carbonfusion.yml 触发
+  → 4 平台并行构建（macos-arm64 + windows-x64 + windows-arm64 + linux-x64）
+  → 每个平台从 begda/AionCore 下载对应 AionCore 构件
+  → 创建 tag（v{VERSION}-carbonfusion-{SHORT_SHA}）
+  → 运行 prepare-release-assets-carbonfusion.sh（只验证 4 平台产物）
+  → 创建 Draft Release（含构建产物）
+```
 
 ```
 CI 构建开始

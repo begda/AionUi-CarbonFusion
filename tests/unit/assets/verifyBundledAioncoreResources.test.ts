@@ -256,7 +256,7 @@ describe('verifyBundledAioncoreResources', () => {
   it('fails when the contract schema version is unsupported', () => {
     const manifestPath = join(managedResourcesDir, 'manifest.json');
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-    manifest.schemaVersion = 2;
+    manifest.schemaVersion = 0;
     writeJson(manifestPath, manifest);
 
     const result = verifyBundledAioncoreResources({

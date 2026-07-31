@@ -172,16 +172,16 @@ linux:
   artifactName: ${productName}-${version}-${os}-${arch}.${ext}
   category: Utility
   maintainer: aionui
-  vendor: aionui
+  vendor: carbonfusion
   synopsis: ${description}
   description: ${description}
   desktop:
     entry:
-      Name: AionUi
+      Name: CarbonFusion
       Comment: ${description}
-      Icon: AionUi
+      Icon: CarbonFusion
       Categories: Office;Utility;
-      MimeType: x-scheme-handler/aionui;
+      MimeType: x-scheme-handler/carbonfusion;
 
 npmRebuild: false
 buildDependenciesFromSource: false
