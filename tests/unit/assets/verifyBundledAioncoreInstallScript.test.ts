@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const scriptPath = 'resources/windows/support/verify-bundled-aioncore-install.ps1';
@@ -36,9 +36,7 @@ describe('Windows bundled aioncore install verifier', () => {
   });
 
   it('preserves verifier details when PowerShell exits with an error', () => {
-    expect(script).toContain("Write-VerifyDiagnosticOutput 'resource-failure' $summary");
-    expect(script).toContain("Write-VerifyDiagnosticOutput 'script-error' $exceptionSummary");
-    expect(script).toContain('detailBase64=$detailBase64');
+    expect(script).toContain('kind=resource-failure detailBase64=$summaryBase64');
     expect(installerVerify).toContain('nsExec::ExecToStack');
     expect(installerVerify).toContain('Pop $AionUiVerifyResourceOutput');
     expect(installerVerify).toContain(
@@ -52,6 +50,61 @@ describe('Windows bundled aioncore install verifier', () => {
   });
 
   const runOnWindows = process.platform === 'win32' ? it : it.skip;
+
+  runOnWindows('parses successfully with Windows PowerShell', () => {
+    const parseCommand = [
+      '& {',
+      'param([string]$ScriptPath)',
+      '$parseErrors = $null',
+      '[System.Management.Automation.Language.Parser]::ParseFile($ScriptPath, [ref]$null, [ref]$parseErrors) | Out-Null',
+      'if ($parseErrors.Count -gt 0) {',
+      '$parseErrors | ForEach-Object { [Console]::Error.WriteLine($_.Message) }',
+      'exit 1',
+      '}',
+      '}',
+    ].join('; ');
+    const result = spawnSync('powershell.exe', ['-NoProfile', '-Command', parseCommand, resolve(scriptPath)], {
+      encoding: 'utf8',
+    });
+
+    expect(result.status, result.stderr).toBe(0);
+  });
+
+  runOnWindows('accepts a schemaVersion 2 managed resources manifest', () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'aionui-install-schema-v2-'));
+    const installDir = join(tmp, 'install');
+    const bundleRoot = join(installDir, 'resources', 'bundled-aioncore', 'win32-x64');
+    const logPath = join(tmp, 'verify.log');
+
+    try {
+      writeFile(join(bundleRoot, 'aioncore.exe'), 'x');
+      writeJson(join(bundleRoot, 'manifest.json'), { platform: 'win32', arch: 'x64' });
+      writeJson(join(bundleRoot, 'managed-resources', 'manifest.json'), { schemaVersion: 2 });
+
+      const result = spawnSync(
+        'powershell.exe',
+        [
+          '-NoProfile',
+          '-ExecutionPolicy',
+          'Bypass',
+          '-File',
+          scriptPath,
+          '-InstallDir',
+          installDir,
+          '-RuntimeKey',
+          'win32-x64',
+          '-LogPath',
+          logPath,
+        ],
+        { encoding: 'utf8' }
+      );
+
+      expect(result.status, result.stderr).toBe(0);
+      expect(readFileSync(logPath, 'utf8')).toContain('result=ok');
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
 
   runOnWindows('fails an old-version-only Codex ACP install directory', () => {
     const tmp = mkdtempSync(join(tmpdir(), 'aionui-install-verify-'));
