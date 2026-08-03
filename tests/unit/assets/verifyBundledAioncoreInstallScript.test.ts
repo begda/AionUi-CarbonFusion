@@ -44,6 +44,32 @@ describe('Windows bundled aioncore install verifier', () => {
     );
   });
 
+  it('continues installation when the verifier script cannot be parsed', () => {
+    expect(installerVerify).toContain('AIONUI_VERIFY_SCRIPT_PARSE_ERROR_EXIT_CODE "86"');
+    expect(installerVerify).toContain(
+      '[System.Management.Automation.Language.Parser]::ParseFile($$scriptPath, [ref]$$null, [ref]$$parseErrors)'
+    );
+    expect(installerVerify).toContain(
+      '${If} $AionUiVerifyResourceResult == ${AIONUI_VERIFY_SCRIPT_PARSE_ERROR_EXIT_CODE}'
+    );
+    expect(installerVerify).toContain('verify-bundled-aioncore degraded=continue reason=verifier-script-parse-error');
+  });
+
+  it('still fails installation when parsed verifier reports missing resources', () => {
+    const parseErrorBranch = installerVerify.indexOf(
+      '${If} $AionUiVerifyResourceResult == ${AIONUI_VERIFY_SCRIPT_PARSE_ERROR_EXIT_CODE}'
+    );
+    const resourceFailureBranch = installerVerify.indexOf(
+      '${ElseIf} $AionUiVerifyResourceResult != 0',
+      parseErrorBranch
+    );
+    const failureUx = installerVerify.indexOf('!insertmacro AIONUI_FAIL_UX', resourceFailureBranch);
+
+    expect(parseErrorBranch).toBeGreaterThan(-1);
+    expect(resourceFailureBranch).toBeGreaterThan(parseErrorBranch);
+    expect(failureUx).toBeGreaterThan(resourceFailureBranch);
+  });
+
   it('requires numeric schemaVersion without PowerShell string coercion', () => {
     expect(script).toContain("Test-NumberField $contract 'schemaVersion'");
     expect(script).not.toContain('if ($contract.schemaVersion -ne 1)');

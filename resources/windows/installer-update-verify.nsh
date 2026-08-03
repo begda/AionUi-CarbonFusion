@@ -10,6 +10,7 @@ Var /GLOBAL AionUiActiveMarkerExecResult
 Var /GLOBAL AionUiActiveMarkerResult
 
 !define AIONUI_ACTIVE_INSTALLER_MARKER "aionui-installer-active.marker"
+!define AIONUI_VERIFY_SCRIPT_PARSE_ERROR_EXIT_CODE "86"
 
 !macro AIONUI_BRING_UPDATED_INSTALLER_TO_FRONT
   ${If} ${isUpdated}
@@ -187,7 +188,17 @@ Var /GLOBAL AionUiActiveMarkerResult
 !macro AIONUI_VERIFY_BUNDLED_AIONCORE_RESOURCES _RUNTIME_KEY
   InitPluginsDir
   File "/oname=$PLUGINSDIR\verify-bundled-aioncore-install.ps1" "${PROJECT_DIR}\resources\windows\support\verify-bundled-aioncore-install.ps1"
-  nsExec::ExecToStack `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\verify-bundled-aioncore-install.ps1" -InstallDir "$INSTDIR" -RuntimeKey "${_RUNTIME_KEY}" -LogPath "$AionUiSessionLogPath"`
+  nsExec::ExecToStack `"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -Command "& { \
+    $$scriptPath = '$PLUGINSDIR\verify-bundled-aioncore-install.ps1'; \
+    $$parseErrors = $$null; \
+    [System.Management.Automation.Language.Parser]::ParseFile($$scriptPath, [ref]$$null, [ref]$$parseErrors) | Out-Null; \
+    if ($$parseErrors.Count -gt 0) { \
+      $$parseErrors | ForEach-Object { [Console]::Error.WriteLine($$_.Message) }; \
+      exit ${AIONUI_VERIFY_SCRIPT_PARSE_ERROR_EXIT_CODE} \
+    }; \
+    & $$scriptPath -InstallDir '$INSTDIR' -RuntimeKey '${_RUNTIME_KEY}' -LogPath '$AionUiSessionLogPath'; \
+    exit $$LASTEXITCODE \
+  }"`
   Pop $AionUiVerifyResourceResult
   Pop $AionUiVerifyResourceOutput
 
@@ -195,7 +206,9 @@ Var /GLOBAL AionUiActiveMarkerResult
     !insertmacro AIONUI_LOG_EVENT "verify-bundled-aioncore-process exitCode=$AionUiVerifyResourceResult output=$AionUiVerifyResourceOutput"
   ${EndIf}
 
-  ${If} $AionUiVerifyResourceResult != 0
+  ${If} $AionUiVerifyResourceResult == ${AIONUI_VERIFY_SCRIPT_PARSE_ERROR_EXIT_CODE}
+    !insertmacro AIONUI_LOG_EVENT "verify-bundled-aioncore degraded=continue reason=verifier-script-parse-error runtime=${_RUNTIME_KEY} result=$AionUiVerifyResourceResult"
+  ${ElseIf} $AionUiVerifyResourceResult != 0
     !insertmacro AIONUI_FAIL_UX \
       "${AIONUI_E_BUNDLED_AIONCORE_INCOMPLETE}" \
       "event=session-end result=fail code=${AIONUI_E_BUNDLED_AIONCORE_INCOMPLETE} detail=bundled-aioncore-incomplete runtime=${_RUNTIME_KEY} result=$AionUiVerifyResourceResult" \
